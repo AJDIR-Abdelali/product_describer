@@ -73,7 +73,7 @@ def save_as_html(results, filename):
 
     .scroll-container {
       display: flex;
-      overflow-x: hidden;
+      overflow-x: auto;
       gap: 20px;
       padding: 20px 0;
     }
