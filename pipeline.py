@@ -40,65 +40,166 @@ def save_output(results, mode="describe", category_filter=None):
 
 def save_as_html(results, filename):
     """Save results as styled HTML file."""
+def save_as_html(results, filename):
+    """Save results as horizontally scrollable cards in HTML."""
     html_content = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Descriptions</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        .product-card { background: white; margin: 20px 0; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .product-title { color: #333; font-size: 1.5em; margin-bottom: 10px; }
-        .product-meta { color: #666; margin-bottom: 15px; }
-        .price { color: #e74c3c; font-weight: bold; }
-        .rating { color: #f39c12; }
-        .description { margin: 15px 0; }
-        .original { background-color: #f8f9fa; padding: 10px; border-left: 4px solid #dee2e6; }
-        .generated { background-color: #e8f5e9; padding: 10px; border-left: 4px solid #28a745; }
-        .category { background-color: #007bff; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.9em; }
-        h1 { text-align: center; color: #333; }
-    </style>
+  <meta charset="UTF-8">
+  <title>AI-Generated Product Descriptions</title>
+  <style>
+    body {
+      background-color: #CBD9E6;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2F4156;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #2F4156;
+    }
+
+    h2 {
+      color: #2F4156;
+      margin-top: 40px;
+      margin-left: 10px;
+      border-bottom: 1px solid #2F4156;
+      padding-bottom: 5px;
+    }
+
+    .scroll-container {
+      display: flex;
+      overflow-x: hidden;
+      gap: 20px;
+      padding: 20px 0;
+    }
+
+    .product-card {
+      flex: 0 0 600px;
+      display: flex;
+      flex-direction: row;
+      background-color: #F5EFEB;
+      border-radius: 10px;
+      padding: 20px;
+      min-height: 300px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .left-column {
+      flex: 1;
+      margin-right: 20px;
+    }
+
+    .right-column {
+      flex: 2;
+    }
+
+    .product-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .badges {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .badge {
+      background-color: #007bff;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+
+    .price {
+      color: #e74c3c;
+      font-weight: bold;
+    }
+
+    .rating {
+      color: #f39c12;
+    }
+
+    .section {
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .original {
+      background-color: #D2DCE4;
+      padding: 10px;
+      border-radius: 5px;
+      font-style: italic;
+    }
+
+    .generated {
+      background-color: #BFBFBF;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>AI-Generated Product Descriptions</h1>
+  <h1>AI-Generated Product Descriptions</h1>
 """
-    
-    # Group by category
+
+    # Regroupement par catégorie
     categories = {}
     for result in results:
         category = result['product'].get('category', 'Uncategorized')
         if category not in categories:
             categories[category] = []
         categories[category].append(result)
-    
+
     for category, products in categories.items():
-        html_content += f'<h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">{category.title()}</h2>'
-        
+        html_content += f"<h2>{category.title()}</h2>"
+        html_content += '<div class="scroll-container">'
         for result in products:
-            product = result['product']
+            product = result["product"]
             html_content += f"""
-        <div class="product-card">
-            <h3 class="product-title">{product['title']}</h3>
-            <div class="product-meta">
-                <span class="category">{product.get('category', 'N/A')}</span>
-                <span class="price">${product.get('price', 'N/A')}</span>
-                <span class="rating">{product.get('rating', 'N/A')}★</span>
-            </div>
-            <div class="description">
-                <h4>Original Description:</h4>
-                <div class="original">{product.get('description', 'N/A')}</div>
-                <h4>AI-Generated Description:</h4>
-                <div class="generated">{result['output']}</div>
-            </div>
+            
+    <div class="product-card">
+      <div class="left-column">
+        <div class="product-title">{product['title']}</div>
+        <div class="badges">
+          <span class="badge">{product.get('category', 'N/A')}</span>
+          <span class="price">${product.get('price', 'N/A')}</span>
+          <span class="rating">{product.get('rating', 'N/A')}★</span>
         </div>
-"""
-    
-    html_content += """
+      </div>
+      <div class="right-column">
+        <div class="section">
+          <div class="section-title">Original Description:</div>
+          <div class="original">{product.get('description', 'N/A')}</div>
+        </div>
+        <div class="section">
+          <div class="section-title">AI-Generated Description:</div>
+          <div class="generated">{result['output']}</div>
+        </div>
+      </div>
     </div>
+"""
+        html_content += '</div>'  # end of scroll-container
+
+    html_content += """
 </body>
 </html>
 """
