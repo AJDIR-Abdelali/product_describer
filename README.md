@@ -18,6 +18,7 @@ product-description-generator/
 ```
 ## Members of project 
  AJDIR Abdelali
+ OUKDOUR Aicha
 
 
 
